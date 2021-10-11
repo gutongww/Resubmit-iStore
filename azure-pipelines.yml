@@ -14,10 +14,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: NodeTool@0
+- task: PowerShell@2
+  displayName: 'Inline Powershell'
   inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+    TargetType: inline
+    Script: |
+     Compress-Archive -Path "$(rootDir)" -DestinationPath "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+    pwsh: true
 
 
 - script: |
