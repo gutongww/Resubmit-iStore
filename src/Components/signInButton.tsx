@@ -5,7 +5,7 @@ export interface SigninButtonProps {
 };
 
 const CLIENT_ID = "efbbd8c7661a607c8a65";
-const REDIRECT_URI = "http://192.168.110.1:3000/welcome";
+const REDIRECT_URI = "https://istorewww.netlify.app/welcome";
 
 const SigninButton = () =>
     <div className="signinGithub">

@@ -7,11 +7,22 @@ import Header from "./Components/Header";
 import Shopping from "./Components/Shopping";
 import Shopping2 from "./Components/Shopping2";
 import { LoginPage } from "./Components/LoginPage";
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+
+const httpLink = createHttpLink({
+  uri: 'https://istore-msa-2021.azurewebsites.net/graphql/',
+});
 
 
+const client = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
+});
 
 function App() {
   return (
+    <ApolloProvider client={client}>
     <div className="App">
       <Header/>
       <Switch>
@@ -21,8 +32,8 @@ function App() {
         
       </Switch>
       <Footer></Footer>
-    
     </div>
+    </ApolloProvider>
   );
 }
 

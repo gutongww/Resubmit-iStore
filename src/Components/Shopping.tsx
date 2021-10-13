@@ -15,7 +15,39 @@ import TextField from './TextField';
 // Styles
 import { Wrapper, StyledButton } from './App.styles';
 import CheckoutWrapper from '../CheckoutWrapper';
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import { useQuery as usQuery, gql } from '@apollo/client';
 
+const httpLink = createHttpLink({
+  uri: 'https://istore-msa-2021.azurewebsites.net/graphql/',
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
+  }
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+});
+
+const GET_USER = gql`
+query{
+  users{
+      username
+      password
+  }
+}
+`;
 
 // Types
 export type CartItemType = {
@@ -27,6 +59,13 @@ export type CartItemType = {
   title: string;
   amount: number;
 };
+
+export type Login_login_user = {
+  username: string;
+  password: string;
+  address: string;
+}
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,12 +81,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-
 const getProducts = async (): Promise<CartItemType[]> =>
   await (await fetch('https://fakestoreapi.com/products')).json();
 
-  const Shopping = () => {
+  const getUsers = async (): Promise<Login_login_user[]> =>
+  await (await fetch('http://istore-msa-2021.azurewebsites.net/graphql/')).json();
 
+  const Shopping = () => {
+    const { loading} = usQuery<Login_login_user>(
+      GET_USER,
+    );
     const [sideBar, setSideBar] = useState(false);
     const classes = useStyles();
   

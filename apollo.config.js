@@ -2,6 +2,6 @@ module.exports = {
     client: {
       service: {
         name: "iStore",
-        url: "http://localhost:36839/graphql/"}
+        url: "https://istore-msa-2021.azurewebsites.net/graphql/"}
     },
   };

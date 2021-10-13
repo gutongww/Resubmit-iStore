@@ -2,7 +2,7 @@ import React, {useEffect }from "react";
 import { TextField, Typography, Grid, Container, Button } from "@material-ui/core";
 import SigninButton from "../Components/signInButton";
 import { useHistory, useLocation } from "react-router-dom";
-import { useMutation } from "@apollo/client";
+import { useQuery as usQuery, gql,useMutation } from '@apollo/client';
 import { LOGIN } from "../api/mutations";
 
 
@@ -12,6 +12,15 @@ export interface Login_login_user {
   password: string;
   address: string;
 }
+
+const GET_USER = gql`
+query{
+  users{
+      username
+      password
+  }
+}
+`;
 
 export interface Login_login {
   __typename: "LoginPayload";
@@ -33,6 +42,9 @@ function useQuery() {
 
 
 export const LoginPage = () => {
+  const {loading} = usQuery<Login_login_user>(
+    GET_USER,
+  );
   const [login] = useMutation<Login>(LOGIN);
   const query = useQuery();
   const history = useHistory();
@@ -40,6 +52,8 @@ export const LoginPage = () => {
   useEffect(() => {
     const loginMethod = async () => {
       const code = query.get("code");
+      
+  
       if (code != null) {
         try {
           const { data } = await login({ variables: { code } });
@@ -50,7 +64,7 @@ export const LoginPage = () => {
         } catch (e) {
           console.log(e);
         }
-        history.push('/home');
+        history.push('/');
       }
     };
     loginMethod();

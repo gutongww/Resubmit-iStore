@@ -32,7 +32,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "generate": "apollo service:download --endpoint=http://localhost:36839/graphql graphql-schema.json | apollo codegen:generate --localSchemaFile=graphql-schema.json --target=typescript --tagName=gql"
+    "generate": "apollo service:download --endpoint=http://istore-msa-2021.azurewebsites.net/graphql/ graphql-schema.json | apollo codegen:generate --localSchemaFile=graphql-schema.json --target=typescript --tagName=gql"
   },
   "eslintConfig": {
     "extends": [
@@ -40,6 +40,14 @@
       "react-app/jest"
     ],
     "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      },
       {
         "files": [
           "**/*.stories.*"
@@ -63,6 +71,12 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.3.11",
+    "@storybook/addon-essentials": "^6.3.11",
+    "@storybook/addon-links": "^6.3.11",
+    "@storybook/node-logger": "^6.3.11",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.11",
     "@types/graphql": "^14.5.0",
     "@types/styled-components": "^5.1.15",
     "apollo": "^2.33.6"

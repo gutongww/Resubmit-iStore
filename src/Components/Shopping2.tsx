@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect} from 'react';
 import { useQuery } from 'react-query';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 // Components
@@ -15,9 +15,14 @@ import TextField from './TextField';
 // Styles
 import { Wrapper, StyledButton } from './App.styles';
 import CheckoutWrapper from '../CheckoutWrapper';
+import { useHistory, useLocation } from "react-router-dom";
+import { useMutation,useQuery as usQuery, gql } from "@apollo/client";
+import { LOGIN } from "../api/mutations";
 
 
 // Types
+
+
 export type CartItemType = {
   id: number;
   category: string;
@@ -27,6 +32,43 @@ export type CartItemType = {
   title: string;
   amount: number;
 };
+
+export interface Login_login_user {
+  __typename: "User";
+  username: string;
+  password: string;
+  address: string;
+}
+
+const GET_USER = gql`
+query{
+  users{
+      username
+      password
+  }
+}
+`;
+
+export interface Login_login {
+  __typename: "LoginPayload";
+  student: Login_login_user;
+  jwt: string;
+}
+
+export interface Login {
+  login: Login_login;
+}
+
+export interface LoginVariables {
+  code: string;
+}
+
+function useQuery2() {
+  return new URLSearchParams(useLocation().search);
+}
+
+
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -47,6 +89,33 @@ const getProducts = async (): Promise<CartItemType[]> =>
   await (await fetch('https://fakestoreapi.com/products')).json();
 
   const Shopping2 = () => {
+    const {loading} = usQuery<Login_login_user>(
+      GET_USER,
+    );
+    const [login] = useMutation<Login>(LOGIN);
+    const query = useQuery2();
+    const history = useHistory();
+  
+    useEffect(() => {
+      const loginMethod = async () => {
+        const code = query.get("code");
+        
+    
+        if (code != null) {
+          try {
+            const { data } = await login({ variables: { code } });
+            if (data != null) {
+              localStorage.setItem("token", data.login.jwt)
+              console.log(data)
+            }
+          } catch (e) {
+            console.log(e);
+          }
+          history.push('/');
+        }
+      };
+      loginMethod();
+    }, []);
 
     const [sideBar, setSideBar] = useState(false);
     const classes = useStyles();
